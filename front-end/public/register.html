@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Perfil</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <main class="container">
+        <h1>Complete seu cadastro</h1>
+        <p>Informe seu nome completo e selecione o nível de acesso do seu perfil profissional.</p>
+
+        <form id="register-form">
+            <label for="name">Nome Completo</label>
+            <input type="text" id="name" name="name" required placeholder="Ex: Melissa Junqueira">
+
+            <label for="role">Cargo / Perfil</label>
+            <select id="role" name="role" required>
+                <option value="ROLE_CUSTOMER">Cliente</option>
+                <option value="ROLE_ADMINISTRATOR">Administrador</option>
+            </select>
+
+            <button type="submit">Salvar e Concluir Cadastro</button>
+        </form>
+
+        <p id="error" class="error" hidden></p>
+    </main>
+
+    <script>
+        const token = sessionStorage.getItem('token');
+
+        if (!token) {
+            window.location.href = '/';
+        }
+
+        document.getElementById('register-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value.trim();
+            const role = document.getElementById('role').value;
+            const errorEl = document.getElementById('error');
+            errorEl.hidden = true;
+
+            try {
+                // CORRIGIDO: Aponta diretamente para a nossa rota unificada de API do Gateway
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ name, role })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Erro ao atualizar perfil corporativo.');
+                }
+
+                window.location.href = '/dashboard';
+            } catch (error) {
+                errorEl.textContent = error.message;
+                errorEl.hidden = false;
+            }
+        });
+    </script>
+</body>
+</html>

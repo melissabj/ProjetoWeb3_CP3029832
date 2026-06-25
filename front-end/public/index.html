@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso ao Sistema</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f2f5; margin: 0; }
+        .box { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 340px; }
+        .tabs { display: flex; justify-content: space-between; margin-bottom: 20px; border-bottom: 2px solid #eee; }
+        .tab-btn { flex: 1; padding: 10px; background: none; border: none; font-size: 16px; cursor: pointer; color: #666; font-weight: bold; }
+        .tab-btn.active { color: #007bff; border-bottom: 2px solid #007bff; }
+        input { width: 100%; padding: 12px; margin: 10px 0 20px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+        button.submit-btn { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        button.submit-btn:hover { background: #0056b3; }
+        .error { color: #dc3545; font-size: 14px; margin-top: 10px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="tabs">
+            <button type="button" id="tab-login" class="tab-btn active" onclick="setFlow('login')">Entrar</button>
+            <button type="button" id="tab-cadastro" class="tab-btn" onclick="setFlow('cadastro')">Criar Conta</button>
+        </div>
+
+        <h4 id="flow-title">Acessar minha conta</h4>
+        <form id="auth-form">
+            <input type="email" id="email" placeholder="Digite seu e-mail" required>
+            <button type="submit" class="submit-btn" id="btn-submit">Enviar Código de Acesso</button>
+        </form>
+        <p id="error-msg" class="error" hidden></p>
+    </div>
+
+    <script>
+        let currentFlow = 'login';
+
+        function setFlow(flow) {
+            currentFlow = flow;
+            document.getElementById('tab-login').classList.toggle('active', flow === 'login');
+            document.getElementById('tab-cadastro').classList.toggle('active', flow === 'cadastro');
+            document.getElementById('flow-title').textContent = flow === 'login' ? 'Acessar minha conta' : 'Cadastrar novo e-mail';
+            document.getElementById('btn-submit').textContent = flow === 'login' ? 'Enviar Código de Acesso' : 'Validar e Cadastrar';
+            document.getElementById('error-msg').hidden = true;
+        }
+
+        document.getElementById('auth-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const errorMsg = document.getElementById('error-msg');
+            errorMsg.hidden = true;
+
+            try {
+                const response = await fetch('/api/send-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Erro ao processar solicitação.');
+                }
+
+                // Redireciona passando o e-mail e o fluxo atual (login ou cadastro) na URL
+                window.location.href = `/verify?email=${encodeURIComponent(email)}&flow=${currentFlow}`;
+            } catch (error) {
+                errorMsg.textContent = error.message;
+                errorMsg.hidden = false;
+            }
+        });
+    </script>
+</body>
+</html>

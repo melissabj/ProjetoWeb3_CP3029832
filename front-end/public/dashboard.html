@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <main class="container dashboard">
+        <h1>Dashboard do Sistema</h1>
+        <p>Bem-vindo ao ambiente logado! Utilize os recursos abaixo para inspecionar os endpoints protegidos por JWT.</p>
+
+        <div class="actions">
+            <button type="button" id="btn-protected">Testar Endpoint Protegido</button>
+            <button type="button" id="btn-profile">Meu Perfil Completo</button>
+            <button type="button" id="btn-logout" class="secondary">Sair do Sistema</button>
+        </div>
+
+        <section id="result-section" hidden>
+            <h2>Dados Retornados da API</h2>
+            <pre id="result"></pre>
+        </section>
+    </main>
+
+    <script>
+        const token = sessionStorage.getItem('token');
+
+        if (!token) {
+            window.location.href = '/';
+        }
+
+        const resultSection = document.getElementById('result-section');
+        const resultEl = document.getElementById('result');
+
+        function showResult(data) {
+            resultEl.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+            resultSection.hidden = false;
+        }
+
+        document.getElementById('btn-protected').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/protected', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const text = await response.text();
+                showResult(response.ok ? text : `Erro ${response.status}: ${text}`);
+            } catch (error) {
+                showResult(error.message);
+            }
+        });
+
+        document.getElementById('btn-profile').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                showResult(response.ok ? data : `Erro ${response.status}: ${JSON.stringify(data)}`);
+            } catch (error) {
+                showResult(error.message);
+            }
+        });
+
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            sessionStorage.removeItem('token');
+            window.location.href = '/';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+# Dependências
+node_modules/
+/dist
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+
+# Variáveis de Ambiente Locais
+.env
+.env.local
+
+# Arquivos do VS Code individuais
+.vscode/
