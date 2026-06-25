@@ -125,18 +125,24 @@ spring.rabbitmq.ssl.enabled=true
 
 # --- Configuração do SMTP (Gmail) ---
 
-# Dica: Use "App Passwords" do Google, nunca sua senha de login pessoal.
-# É ESTRITAMENTE necessário usar a Senha de App para que o envio funcione. 
+Dica: Use "App Passwords" do Google, nunca sua senha de login pessoal.
+**É ESTRITAMENTE necessário usar a Senha de App para que o envio funcione.**
 
-Requisitos: Sua conta deve ter a verificação em duas etapas (2FA) ativada.
+**Requisitos: Sua conta deve ter a verificação em duas etapas (2FA) ativada.**
 [Acesse aqui o tutorial](https://support.google.com/accounts/answer/185833?hl=pt)
 
 `application.properties (email-service)`
+
 ...
+
 spring.mail.host=smtp.gmail.com
+
 spring.mail.port=587
+
 spring.mail.username=seu_email@gmail.com
+
 spring.mail.password=sua_senha_de_app_do_google
+
 ...
 
 --
