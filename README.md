@@ -147,7 +147,7 @@ spring.mail.password=sua_senha_de_app_do_google
 
 --
 
-##📋 RESUMO DO FLUXO DE EXECUÇÃO (Passo a Passo)
+## 📋 RESUMO DO FLUXO DE EXECUÇÃO (Passo a Passo)
 
 Para colocar todo o ecossistema para rodar perfeitamente do zero, siga exatamente esta ordem:
 
